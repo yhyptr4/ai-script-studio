@@ -182,28 +182,7 @@ Dark cinematic realistic documentary`}
 </div>
               </button>
 
-              {result && (
-
-  <button
-  onClick={() => {
-    navigator.clipboard.writeText(result)
-    alert('Script copied!')
-  }}
-  className="bg-blue-600 hover:bg-blue-500 transition px-8 py-4 rounded-2xl font-bold text-lg"
->
-  Copy Script
-</button>
-
-)}
-
-{result && (
-  <button
-    onClick={exportPDF}
-                  className="bg-green-600 hover:bg-green-500 transition px-8 py-4 rounded-2xl font-bold text-lg"
-                >
-                  Export PDF
-                </button>
-              )}
+              
 
             </div>
 
@@ -235,6 +214,28 @@ Dark cinematic realistic documentary`}
           <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl flex flex-col">
 
             <div className="flex items-center justify-between mb-6">
+              {result && (
+  <div className="flex gap-4 mb-6">
+
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(result)
+        alert('Script copied!')
+      }}
+      className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-2xl font-bold"
+    >
+      Copy Script
+    </button>
+
+    <button
+      onClick={exportPDF}
+      className="bg-green-600 hover:bg-green-500 transition px-6 py-3 rounded-2xl font-bold"
+    >
+      Export PDF
+    </button>
+
+  </div>
+)}
 
               <h2 className="text-2xl font-bold">
                 AI Output
