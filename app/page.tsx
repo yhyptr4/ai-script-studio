@@ -161,12 +161,44 @@ Dark cinematic realistic documentary`}
                 disabled={loading}
                 className="bg-red-600 hover:bg-red-500 transition px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-red-900/40"
               >
-                {loading ? 'Generating...' : 'Generate Script'}
+                <div className="flex items-center gap-3">
+  {loading && (
+    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+  )}
+
+  <span>
+    <div className="flex items-center gap-3">
+  {loading && (
+    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+  )}
+
+  <span>
+    {loading
+      ? 'AI is analyzing the darkness...'
+      : 'Generate Script'}
+  </span>
+</div>
+  </span>
+</div>
               </button>
 
               {result && (
-                <button
-                  onClick={exportPDF}
+
+  <button
+  onClick={() => {
+    navigator.clipboard.writeText(result)
+    alert('Script copied!')
+  }}
+  className="bg-blue-600 hover:bg-blue-500 transition px-8 py-4 rounded-2xl font-bold text-lg"
+>
+  Copy Script
+</button>
+
+)}
+
+{result && (
+  <button
+    onClick={exportPDF}
                   className="bg-green-600 hover:bg-green-500 transition px-8 py-4 rounded-2xl font-bold text-lg"
                 >
                   Export PDF
@@ -218,9 +250,24 @@ Dark cinematic realistic documentary`}
   ref={outputRef}
   className="flex-1 bg-black/40 border border-white/10 rounded-2xl p-8 overflow-y-auto whitespace-pre-wrap leading-9 text-lg text-zinc-200 min-h-[1000px]"
 >
-              {loading
-                ? 'AI sedang membangun narrative tension...'
-                : result || 'Generated script akan muncul di sini...'}
+              {loading ? (
+  <div className="flex flex-col items-center justify-center h-full text-center">
+
+    <div className="w-16 h-16 border-4 border-red-500/20 border-t-red-500 rounded-full animate-spin mb-8" />
+
+    <h2 className="text-2xl font-bold text-red-400 mb-3">
+      AI is analyzing the darkness...
+    </h2>
+
+    <p className="text-zinc-500 max-w-md leading-8">
+      Building cinematic tension, uncovering disturbing details,
+      and crafting a mindblowing narrative...
+    </p>
+
+  </div>
+) : (
+  result || 'Generated script akan muncul di sini...'
+)}
             </div>
 
           </div>
