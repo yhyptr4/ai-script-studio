@@ -1,0 +1,238 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import jsPDF from 'jspdf'
+
+export default function Home() {
+  const [idea, setIdea] = useState('')
+  const [revision, setRevision] = useState('')
+  const [result, setResult] = useState('')
+  const [loading, setLoading] = useState(false)
+  const outputRef = useRef<HTMLDivElement | null>(null)
+
+  async function generateScript() {
+    try {
+      setLoading(true)
+
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idea,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.error) {
+        setResult('ERROR: ' + data.error)
+      } else {
+        setResult(data.result)
+
+setTimeout(() => {
+  outputRef.current?.scrollIntoView({
+    behavior: 'smooth',
+  })
+}, 200)
+      }
+    } catch (error) {
+      setResult('Terjadi error saat generate script')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function reviseScript() {
+    try {
+      setLoading(true)
+
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idea,
+          previousScript: result,
+          revisionPrompt: revision,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.error) {
+        setResult('ERROR: ' + data.error)
+      } else {
+        setResult(data.result)
+      }
+    } catch (error) {
+      setResult('Terjadi error saat revisi script')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function exportPDF() {
+    if (!result) return
+
+    const doc = new jsPDF()
+
+    const margin = 15
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxWidth = pageWidth - margin * 2
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(12)
+
+    const lines = doc.splitTextToSize(result, maxWidth)
+
+    doc.text(lines, margin, 20)
+
+    const fileName = idea
+      ? `${idea}.pdf`
+      : 'ai-script.pdf'
+
+    doc.save(fileName)
+  }
+
+  return (
+    <main className="min-h-screen bg-black text-white overflow-hidden relative">
+
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,0,0.15),transparent_40%)]" />
+
+      <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-red-500 blur-[120px] rounded-full" />
+        <div className="absolute bottom-20 right-20 w-72 h-72 bg-red-800 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16">
+
+        <div className="mb-14">
+
+          <div className="inline-flex items-center gap-2 border border-red-900 bg-red-950/30 px-4 py-2 rounded-full text-red-300 text-sm mb-6 backdrop-blur-xl">
+            ● AI Dark Storytelling Studio
+          </div>
+
+          <h1 className="text-7xl font-black tracking-tight leading-none max-w-4xl">
+            Create
+            <span className="text-red-500"> Cinematic </span>
+            Scripts With AI
+          </h1>
+
+          <p className="text-zinc-400 text-xl mt-6 max-w-3xl leading-9">
+            Generate disturbing real-case storytelling, dark documentary narration,
+            and mindblowing cinematic scripts for TikTok & YouTube.
+          </p>
+
+        </div>
+
+        <div className="flex flex-col gap-8">
+
+          <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl">
+
+            <h2 className="text-2xl font-bold mb-6">
+              Script Generator
+            </h2>
+
+            <textarea
+              value={idea}
+              onChange={(e) => setIdea(e.target.value)}
+              placeholder={`Contoh:
+
+Chessboard Killer
+
+Format:
+Hook - Foreshadow - Body - CTA
+
+Durasi:
+5 menit
+
+Style:
+Dark cinematic realistic documentary`}
+              className="w-full h-[220px] bg-black/40 border border-white/10 rounded-2xl p-6 text-white outline-none text-lg resize-none"
+            />
+
+            <div className="flex flex-wrap gap-4 mt-6">
+
+              <button
+                onClick={generateScript}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-500 transition px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-red-900/40"
+              >
+                {loading ? 'Generating...' : 'Generate Script'}
+              </button>
+
+              {result && (
+                <button
+                  onClick={exportPDF}
+                  className="bg-green-600 hover:bg-green-500 transition px-8 py-4 rounded-2xl font-bold text-lg"
+                >
+                  Export PDF
+                </button>
+              )}
+
+            </div>
+
+            {result && (
+              <>
+                <h2 className="text-2xl font-bold mt-10 mb-4">
+                  Revise Script
+                </h2>
+
+                <textarea
+                  value={revision}
+                  onChange={(e) => setRevision(e.target.value)}
+                  placeholder="Contoh: buat hook lebih disturbing, pacing lebih lambat, ending lebih unsettling..."
+                  className="w-full h-32 bg-black/40 border border-white/10 rounded-2xl p-6 text-white outline-none text-lg resize-none"
+                />
+
+                <button
+                  onClick={reviseScript}
+                  disabled={loading}
+                  className="mt-5 bg-white text-black hover:opacity-80 transition px-8 py-4 rounded-2xl font-bold text-lg"
+                >
+                  {loading ? 'Revising...' : 'Revise Script'}
+                </button>
+              </>
+            )}
+
+          </div>
+
+          <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl flex flex-col">
+
+            <div className="flex items-center justify-between mb-6">
+
+              <h2 className="text-2xl font-bold">
+                AI Output
+              </h2>
+
+              <div className="text-sm text-zinc-500">
+                Dark Cinematic Mode
+              </div>
+
+            </div>
+
+            <div
+  ref={outputRef}
+  className="flex-1 bg-black/40 border border-white/10 rounded-2xl p-8 overflow-y-auto whitespace-pre-wrap leading-9 text-lg text-zinc-200 min-h-[1000px]"
+>
+              {loading
+                ? 'AI sedang membangun narrative tension...'
+                : result || 'Generated script akan muncul di sini...'}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+<div className="fixed bottom-5 right-5 z-50">
+  <div className="bg-white/5 border border-white/10 backdrop-blur-xl px-4 py-2 rounded-full text-sm text-zinc-400 shadow-xl">
+    Created by <span className="text-red-500 font-semibold">Yahya Putra</span>
+  </div>
+</div>
+    </main>
+  )
+}
