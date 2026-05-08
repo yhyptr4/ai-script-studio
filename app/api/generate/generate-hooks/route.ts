@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const completion = await openai.chat.completions.create({
-      model: 'openai/gpt-3.5-turbo',
+      model: 'deepseek/deepseek-chat',
 
       messages: [
         {
