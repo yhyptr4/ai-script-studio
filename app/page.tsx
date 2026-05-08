@@ -8,6 +8,7 @@ export default function Home() {
   const [revision, setRevision] = useState('')
   const [result, setResult] = useState('')
   const [history, setHistory] = useState<string[]>([])
+  const [template, setTemplate] = useState('True Crime')
   const [loading, setLoading] = useState(false)
   const outputRef = useRef<HTMLDivElement | null>(null)
 
@@ -21,8 +22,9 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          idea,
-        }),
+  idea,
+  template,
+}),
       })
 
       const data = await res.json()
@@ -138,6 +140,17 @@ setTimeout(() => {
               Script Generator
             </h2>
 
+<select
+  value={template}
+  onChange={(e) => setTemplate(e.target.value)}
+  className="w-full mb-5 bg-black/40 border border-white/10 rounded-2xl p-4 text-white outline-none text-lg"
+>
+  <option>True Crime</option>
+  <option>Conspiracy</option>
+  <option>Psychological Horror</option>
+  <option>Historical Dark</option>
+  <option>Mystery Investigation</option>
+</select>
             <textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}

@@ -8,6 +8,7 @@ const openai = new OpenAI({
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+    const { idea, template } = body
 
     const isRevision =
       body.previousScript && body.revisionPrompt
@@ -26,8 +27,24 @@ ${body.revisionPrompt}
 Tolong revisi script di atas sesuai instruksi terbaru.
 `
     } else {
-      userPrompt = `
-${body.idea}
+    userPrompt = `
+Buat script storytelling dark cinematic berdasarkan topik berikut:
+
+TOPIK:
+${idea}
+
+TEMPLATE STYLE:
+${template}
+
+Gunakan format:
+[HOOK]
+[FORESHADOW]
+[BODY]
+[CTA]
+
+Durasi sekitar 5 menit.
+
+Gunakan bahasa Indonesia yang immersive, enjoyable, cinematic, dan seperti narrator documentary modern YouTube.
 `
     }
 
