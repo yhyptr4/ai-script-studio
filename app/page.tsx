@@ -8,6 +8,7 @@ export default function Home() {
   const [revision, setRevision] = useState('')
   const [result, setResult] = useState('')
   const [history, setHistory] = useState<string[]>([])
+  const [hooks, setHooks] = useState('')
   const [template, setTemplate] = useState('True Crime')
   const [loading, setLoading] = useState(false)
   const outputRef = useRef<HTMLDivElement | null>(null)
@@ -78,6 +79,33 @@ setTimeout(() => {
     }
   }
 
+  async function generateHooks() {
+  try {
+    setLoading(true)
+
+    const res = await fetch('/api/generate-hooks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        script: result,
+      }),
+    })
+
+    const data = await res.json()
+
+    if (data.error) {
+      setHooks('ERROR: ' + data.error)
+    } else {
+      setHooks(data.result)
+    }
+  } catch (error) {
+    setHooks('Terjadi error saat generate hooks')
+  } finally {
+    setLoading(false)
+  }
+}
   function exportPDF() {
     if (!result) return
 
@@ -232,28 +260,48 @@ Dark cinematic realistic documentary`}
               {result && (
   <div className="flex gap-4 mb-6">
 
-    <button
-      onClick={() => {
-        navigator.clipboard.writeText(result)
-        alert('Script copied!')
-      }}
-      className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-2xl font-bold"
-    >
-      Copy Script
-    </button>
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(result)
+      alert('Script copied!')
+    }}
+    className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-2xl font-bold"
+  >
+    Copy Script
+  </button>
 
-    <button
-      onClick={exportPDF}
-      className="bg-green-600 hover:bg-green-500 transition px-6 py-3 rounded-2xl font-bold"
-    >
-      Export PDF
-    </button>
+  <button
+    onClick={exportPDF}
+    className="bg-green-600 hover:bg-green-500 transition px-6 py-3 rounded-2xl font-bold"
+  >
+    Export PDF
+  </button>
 
-  </div>
+  <button
+    onClick={generateHooks}
+    className="bg-purple-600 hover:bg-purple-500 transition px-6 py-3 rounded-2xl font-bold"
+  >
+    Generate Hooks
+  </button>
+
+</div>
 )}
 
               <h2 className="text-2xl font-bold">
                 AI Output
+                {hooks && (
+  <div className="mt-10 bg-white/5 border border-white/10 rounded-3xl p-8">
+
+    <h2 className="text-3xl font-bold mb-6">
+      Alternative Hooks
+    </h2>
+
+    <div className="whitespace-pre-wrap leading-8 text-zinc-300">
+      {hooks}
+    </div>
+
+  </div>
+)}
               </h2>
 
               <div className="text-sm text-zinc-500">
