@@ -8,6 +8,45 @@ const openai = new OpenAI({
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+    const { idea, template } = body
+
+    const isRevision =
+      body.previousScript && body.revisionPrompt
+
+    let userPrompt = ''
+
+    if (isRevision) {
+      userPrompt = `
+INI SCRIPT SEBELUMNYA:
+
+${body.previousScript}
+
+REVISI YANG DIMINTA:
+${body.revisionPrompt}
+
+Tolong revisi script di atas sesuai instruksi terbaru.
+`
+    } else {
+    userPrompt = `
+Buat script storytelling dark cinematic berdasarkan topik berikut:
+
+TOPIK:
+${idea}
+
+TEMPLATE STYLE:
+${template}
+
+Gunakan format:
+[HOOK]
+[FORESHADOW]
+[BODY]
+[CTA]
+
+Durasi sekitar 5 menit.
+
+Gunakan bahasa Indonesia yang immersive, enjoyable, cinematic, dan seperti narrator documentary modern YouTube.
+`
+    }
 
     const completion = await openai.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
@@ -16,40 +55,55 @@ export async function POST(req: Request) {
         {
           role: 'system',
           content: `
-Kamu adalah AI hook writer untuk konten dark storytelling Indonesia.
+Kamu adalah AI scriptwriter profesional untuk content creator dark storytelling Indonesia.
 
-Tugasmu:
-- membuat 5 hook alternatif
-- lebih disturbing
-- lebih viral
-- lebih bikin penasaran
-- lebih scroll stopping
+ATURAN UTAMA:
+- selalu ikuti format yang diminta user
+- selalu ikuti durasi yang diminta user
+- selalu ikuti style yang diminta user
+- jangan menggunakan format tambahan yang tidak diminta
 
-Gunakan style:
-- cinematic
+STYLE DASAR:
+- dark cinematic storytelling
 - calm but disturbing
-- dark documentary
-- short form content
+- immersive
+- realistic
+- documentary feeling
+- natural Indonesian
+- bukan gaya presenter TV
+- bukan gaya cerpen horror
+- bukan screenplay film
 
-Hook harus:
-- singkat
-- tajam
-- bikin orang berhenti scroll
+OUTPUT:
+- WAJIB beri penanda section sesuai format user
+- contoh:
+[HOOK]
+[FORESHADOW]
+[BODY]
+[CTA]
+- setiap section harus dipisah jelas dengan enter
+- bikin penasaran
+- cinematic
+- engaging
+
+PENTING:
+- hanya gunakan kisah nyata
+- jangan membuat cerita fiksi
+- jangan membuat dialog karakter
+- prioritaskan realism
+- prioritaskan storytelling
+
 `,
         },
 
         {
           role: 'user',
-          content: `
-Buat 5 hook alternatif berdasarkan script ini:
-
-${body.script}
-`,
+          content: userPrompt,
         },
       ],
 
-      temperature: 1,
-      max_tokens: 1000,
+      temperature: 0.9,
+      max_tokens: 4000,
     })
 
     return Response.json({
