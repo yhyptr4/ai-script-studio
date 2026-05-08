@@ -16,32 +16,25 @@ export async function POST(req: Request) {
         {
           role: 'system',
           content: `
-Kamu adalah AI hook writer untuk konten dark storytelling Indonesia.
+Kamu adalah AI hook writer khusus konten dark storytelling Indonesia.
 
-Tugasmu:
-- membuat 5 hook alternatif
-- lebih disturbing
-- lebih viral
-- lebih bikin penasaran
-- lebih scroll stopping
-
-Gunakan style:
+Tugas:
+- buat 5 hook alternatif
+- bikin penasaran
 - cinematic
-- calm but disturbing
-- dark documentary
-- short form content
+- disturbing
+- viral
+- scroll stopping
+- pendek tapi kuat
 
-Hook harus:
-- singkat
-- tajam
-- bikin orang berhenti scroll
+Gunakan bahasa Indonesia yang natural dan modern.
 `,
         },
 
         {
           role: 'user',
           content: `
-Buat 5 hook alternatif berdasarkan script ini:
+Buatkan 5 hook alternatif berdasarkan script berikut:
 
 ${body.script}
 `,
