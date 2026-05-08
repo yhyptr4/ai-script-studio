@@ -95,13 +95,19 @@ setTimeout(() => {
 
     const data = await res.json()
 
-    if (data.error) {
+    console.log(data)
+
+    if (!res.ok) {
       setHooks('ERROR: ' + data.error)
-    } else {
-      setHooks(data.result)
+      return
     }
-  } catch (error) {
-    setHooks('Terjadi error saat generate hooks')
+
+    setHooks(data.result)
+
+  } catch (error: any) {
+    console.error(error)
+
+    setHooks('ERROR: gagal connect ke API')
   } finally {
     setLoading(false)
   }
