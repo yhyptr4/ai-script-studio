@@ -95,7 +95,7 @@ setTimeout(() => {
 
     const data = await res.json()
 
-    console.log(data)
+    console.log('HOOK RESPONSE:', data)
 
     if (!res.ok) {
       setHooks('ERROR: ' + data.error)
