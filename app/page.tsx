@@ -7,6 +7,7 @@ export default function Home() {
   const [idea, setIdea] = useState('')
   const [revision, setRevision] = useState('')
   const [result, setResult] = useState('')
+  const [history, setHistory] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const outputRef = useRef<HTMLDivElement | null>(null)
 
@@ -30,6 +31,7 @@ export default function Home() {
         setResult('ERROR: ' + data.error)
       } else {
         setResult(data.result)
+        setHistory((prev) => [idea, ...prev])
 
 setTimeout(() => {
   outputRef.current?.scrollIntoView({
@@ -281,6 +283,33 @@ Dark cinematic realistic documentary`}
     Created by <span className="text-red-500 font-semibold">Yahya Putra</span>
   </div>
 </div>
+{history.length > 0 && (
+  <div className="max-w-6xl mx-auto px-6 pb-20">
+
+    <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-3xl p-8">
+
+      <h2 className="text-3xl font-bold mb-6">
+        Recent Scripts
+      </h2>
+
+      <div className="flex flex-wrap gap-4">
+
+        {history.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => setIdea(item)}
+            className="bg-black/40 border border-white/10 hover:border-red-500 transition px-5 py-3 rounded-2xl text-zinc-300 hover:text-white"
+          >
+            {item}
+          </button>
+        ))}
+
+      </div>
+
+    </div>
+
+  </div>
+)}
     </main>
   )
 }
